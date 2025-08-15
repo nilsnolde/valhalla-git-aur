@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       need_update: ${{ steps.check_version.outputs.need_update }}
-      latest_version: ${{ steps.check_version.outputs.latest_commit }}
+      latest_commit: ${{ steps.check_version.outputs.latest_commit }}
       latest_version: ${{ steps.check_version.outputs.latest_version }}
 
     steps:
