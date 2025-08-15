@@ -5,8 +5,8 @@
 pkgname=valhalla-git
 _pkgname=${pkgname%-git}
 ### will be updated by GHA/sed ###
-pkgver=3.5.1.r204.bf57462
-_git_commit=bf57462d2d737502d38b0a93f17e89234e4bf346
+pkgver=3.5.1.r211.068a00c
+_git_commit=068a00c73c637ad9658cf91ff9008854166ebc29
 #########################
 pkgrel=1
 pkgdesc="Routing engine for OpenStreetMap."
@@ -18,10 +18,9 @@ conflicts=("${_pkgname}")
 # libmicrohttpd seems to be an unadvertised dependency of czmq-git
 depends=('prime_server' 'protobuf' 'python' 'libspatialite' 'luajit' 'chrono-date' 'gdal')
 makedepends=('cmake' 'git' 'vim' 'jq' 'boost' 'cxxopts' 'libosmium' 'unordered_dense' 'libmicrohttpd')
+checkdepends=('spatialite-tools' 'unzip' 'curl' 'jq')
 source=("valhalla-git::git+${url}.git#commit=${_git_commit}")
 sha256sums=('SKIP')
-
-# custom
 
 prepare() {
   cd "$pkgname"
@@ -44,14 +43,14 @@ prepare() {
     -DBUILD_SHARED_LIBS=On \
     -DPREFER_EXTERNAL_DEPS=ON \
     -DVALHALLA_VERSION_MODIFIER=${_git_commit} \
-    -DENABLE_TESTS=OFF
+    -DENABLE_TESTS=ON
 }
        
-pkgver() {
-  cd "$srcdir/${pkgname}"
-  # e.g. 3.5.1.r199.3226974 (version.distance_from_last_tag.git_hash)
-  printf "%s" "$(git describe --long --tags --abbrev=7 | sed 's/\([^-]*-\)g/r\1/;s/-/./g;s/v//g')"
-}
+# pkgver() {
+#   cd "${pkgname}"
+#   # e.g. 3.5.1.r199.3226974 (version.distance_from_last_tag.git_hash)
+#   printf "%s" "$(git describe --long --tags --abbrev=7 | sed 's/\([^-]*-\)g/r\1/;s/-/./g;s/v//g')"
+# }
 
 build() {
   make -C "${pkgname}/build"
@@ -62,6 +61,7 @@ build() {
 check() {
   "${pkgname}/build/valhalla_build_tiles" -h
   "${pkgname}/build/valhalla_service" -h
+  make -C "${pkgname}/build" run-python_valhalla
 }
 
 package() {
