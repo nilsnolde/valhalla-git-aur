@@ -10,7 +10,7 @@ _git_commit=068a00c73c637ad9658cf91ff9008854166ebc29
 #########################
 pkgrel=1
 pkgdesc="Routing engine for OpenStreetMap."
-arch=('x86_64')
+arch=('x86_64' 'aarch64')
 url="https://github.com/valhalla/valhalla"
 license=('custom:MIT')
 provides=("${_pkgname}=${pkgver}")
