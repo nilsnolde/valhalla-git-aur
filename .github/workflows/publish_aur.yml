@@ -1,0 +1,87 @@
+name: Publish on AUR
+
+on:
+  # schedule:
+  #   - cron: '0 0 * * *'  # Runs every day at midnight
+  workflow_dispatch:
+    inputs:
+      publish_aur:
+        type: boolean
+        description: "Run the publishing workflow"
+        required: false
+        default: true
+
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
+    outputs:
+      need_update: ${{ steps.check_version.outputs.need_update }}
+      latest_version: ${{ steps.check_version.outputs.latest_commit }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "${GITHUB_ACTOR}"
+        git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+    - name: Check if update is needed 
+      id: check_version
+      run: |
+        LATEST_COMMIT=$(curl -s https://api.github.com/repos/valhalla/valhalla/commits/master | jq -r '.sha')
+        echo "Latest commit is $LATEST_COMMIT"
+        
+        CURRENT_COMMIT=$(grep -oP '(?<=_git_commit=)[0-9.]+' PKGBUILD)
+        echo "Current commit is $CURRENT_COMMIT"
+        
+        if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
+          echo "need_update=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "need_update=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        echo "latest_commit=$LATEST_COMMIT" >> "$GITHUB_OUTPUT"
+
+    - name: Update PKGBUILD
+      if: steps.check_version.outputs.need_update == 'true'
+      run: |
+        LATEST_COMMIT=${{ steps.check_version.outputs.latest_commit }}
+        
+        # Update git_commit in PKGBUILD
+        sed -i "s/_git_commit=.*/_git_commit=$LATEST_COMMIT/" PKGBUILD
+        
+        # Commit and push the changes
+        git add PKGBUILD
+        git commit -m "Update valhalla-git to commit $LATEST_COMMIT"
+        git push
+
+    - name: upload PKGBUILD for publish_aur job 
+      if: steps.check_version.outputs.need_update == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: PKGBUILD
+        path: PKGBUILD 
+
+  publish_aur:
+    runs-on: ubuntu-latest
+    needs: update_version 
+    if: needs.update_version.outputs.need_update == 'true'
+    steps:
+    - name: Download PKGBUILD from update_version job 
+      uses: actions/download-artifact@v4
+      with:
+          name: PKGBUILD 
+
+    - name: Publish AUR package
+      uses: ulises-jeremias/github-actions-aur-publish@v1
+      with:
+        pkgname: valhalla-git
+        pkgbuild: ./PKGBUILD
+        commit_username: ${{ secrets.AUR_USERNAME }}
+        commit_email: ${{ secrets.AUR_EMAIL }}
+        ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+        commit_message: 'updated to https://github.com/valhalla/valhalla/commit/${{ needs.update_version.outputs.latest_commit }}'
+        ssh_keyscan_types: rsa,ed25519
+        update_pkgver: true
