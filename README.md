@@ -29,11 +29,11 @@ git push
 More a log of what I did to make the first packaging attempt work:
 
 1. [Building a clean chroot](https://wiki.archlinux.org/title/DeveloperWiki:Building_in_a_clean_chroot#Setting_up_a_chroot)
-2. Install the AUR dependencies to the system
+2. Install the AUR dependencies to the system (not chroot)
     ```
-    yay -Syu prime_server unordered_dense
+    yay -Syu prime_server unordered_dense spatialite_tools
     ```
-3. Build the package in CHROOT with the AUR packages
+3. Build the package in CHROOT with the AUR packages (plus their dependencies)
 
     ```
     CHROOT=~/chroot
@@ -46,7 +46,7 @@ More a log of what I did to make the first packaging attempt work:
       -I ~/.cache/yay/readosm/readosm-1.1.0a-1-x86_64.pkg.tar.zst
     ```
 
-    This will build the tar'd compressed package to the current dir. 
+    This will build the tar/zst'd compressed package to the current dir. 
 
     To interact with the source tree/chroot, the path is e.g. `~/chroot/nilsnolde/build/valhalla-git/src/valhalla-git`. 
 4. Install the package with `sudo pacman -U <path_to.tar.zst>`
@@ -54,10 +54,9 @@ More a log of what I did to make the first packaging attempt work:
 ## TODO
 
   - [x] Create the AUR git repo remotely
-  - [ ] Publish initial package recipe (pending ) 
-  - [ ] automation for publishing AUR package, e.g. https://jabeztho.com/blog/automating-aur-package-maintenance-with-github-actions/
-  - [ ] don't forget to replace with `sed`: 
+  - [ ] Publish initial package recipe (pending https://github.com/valhalla/valhalla/pull/5455) 
+  - [x] automation for publishing AUR package
+  - [x] don't forget to replace with `sed`: 
     - `pkgver=printf "%s" "$(git describe --long --tags --abbrev=7 | sed 's/\([^-]*-\)g/r\1/;s/-/./g;s/v//g')"`
     - `git_commit=git rev-parse --short HEAD`
-  - [ ] run smth like `run-python_valhalla` in `check()`: needs appropriate `checkdepends` packages like spatialite-tools, unzip etc
-  - [ ] ideally add a GHA step which builds the PKGBUILD in a chroot environment and runs `nampac` (caution: also with errors it's exiting with 0)
+  - [x] run smth like `run-python_valhalla` in `check()`: needs appropriate `checkdepends` packages like spatialite-tools, unzip etc
