@@ -4,7 +4,8 @@ pkgbase = valhalla-git
 	pkgrel = 1
 	url = https://github.com/valhalla/valhalla
 	arch = x86_64
-	license = custom:MIT
+	arch = aarch64
+	license = MIT
 	checkdepends = spatialite-tools
 	checkdepends = unzip
 	checkdepends = curl
@@ -25,6 +26,8 @@ pkgbase = valhalla-git
 	depends = luajit
 	depends = chrono-date
 	depends = gdal
+	depends = python-lz4
+	depends = python-shapely
 	provides = valhalla=3.5.1.r211.068a00c
 	conflicts = valhalla
 	source = valhalla-git::git+https://github.com/valhalla/valhalla.git#commit=068a00c73c637ad9658cf91ff9008854166ebc29

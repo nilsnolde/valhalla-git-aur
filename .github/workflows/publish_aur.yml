@@ -39,7 +39,7 @@ jobs:
         
         if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
           # if we need an update we need to compute the latest version too
-          git clone --depth 1 https://github.com/valhalla/valhalla.git valhalla_upstream
+          git clone --branch master --depth 1 https://github.com/valhalla/valhalla.git valhalla_upstream
           cd valhalla_upstream
           LATEST_VERSION=$(printf "%s" "$(git describe --long --tags --abbrev=7 | sed 's/\([^-]*-\)g/r\1/;s/-/./g;s/v//g')")
 
@@ -50,16 +50,19 @@ jobs:
           echo "need_update=false" >> "$GITHUB_OUTPUT"
         fi
 
-    - name: Update PKGBUILD
+    - name: Update PKGBUILD & .SRCINFO
       if: steps.check_version.outputs.need_update == 'true'
       run: |
         LATEST_COMMIT=${{ steps.check_version.outputs.latest_commit }}
         LATEST_VERSION=${{ steps.check_version.outputs.latest_version }}
         
-        # Update git_commit & pkgver in PKGBUILD & .SRCINFO
+        # Update git_commit & pkgver in PKGBUILD
         sed -i "s/_git_commit=.*/_git_commit=$LATEST_COMMIT/" PKGBUILD
         sed -i "s/pkgver=.*/pkgver=$LATEST_VERSION/" PKGBUILD
-        sed -i "s/pkgver = .*/pkgver = $LATEST_VERSION/" .SRCINFO
+        
+        # install arch's makepkg to output .SRCINFO
+        sudo apt-get update && sudo apt-get install -y makepkg
+        makepkg --printsrcinfo > .SRCINFO
         
         # Commit and push the changes
         git add PKGBUILD .SRCINFO

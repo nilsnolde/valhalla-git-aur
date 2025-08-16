@@ -12,11 +12,11 @@ pkgrel=1
 pkgdesc="Routing engine for OpenStreetMap."
 arch=('x86_64' 'aarch64')
 url="https://github.com/valhalla/valhalla"
-license=('custom:MIT')
+license=('MIT')
 provides=("${_pkgname}=${pkgver}")
 conflicts=("${_pkgname}")
 # libmicrohttpd seems to be an unadvertised dependency of czmq-git
-depends=('prime_server' 'protobuf' 'python' 'libspatialite' 'luajit' 'chrono-date' 'gdal')
+depends=('prime_server' 'protobuf' 'python' 'libspatialite' 'luajit' 'chrono-date' 'gdal' 'python-lz4' 'python-shapely')
 makedepends=('cmake' 'git' 'vim' 'jq' 'boost' 'cxxopts' 'libosmium' 'unordered_dense' 'libmicrohttpd')
 checkdepends=('spatialite-tools' 'unzip' 'curl' 'jq')
 source=("valhalla-git::git+${url}.git#commit=${_git_commit}")
@@ -45,7 +45,8 @@ prepare() {
     -DVALHALLA_VERSION_MODIFIER=${_git_commit} \
     -DENABLE_TESTS=ON
 }
-       
+
+# this is done inside GHA
 # pkgver() {
 #   cd "${pkgname}"
 #   # e.g. 3.5.1.r199.3226974 (version.distance_from_last_tag.git_hash)
@@ -56,8 +57,6 @@ build() {
   make -C "${pkgname}/build"
 }
 
-# TODO: I'd prefer a "make -C ${pkgname}/build run-python_valhalla", but needs 
-# appropriate "checkdepends" packages like spatialite-tools, unzip etc
 check() {
   "${pkgname}/build/valhalla_build_tiles" -h
   "${pkgname}/build/valhalla_service" -h
@@ -68,7 +67,8 @@ package() {
   cd "$pkgname"
   make -C build DESTDIR="$pkgdir" install
   rm -rf "$pkgdir/usr/share/doc/"{libvalhalla-dev,libvalhalla0,python-valhalla}
+  rm -rf "$pkgdir/usr/share/doc/valhalla/"{README_python.md,contributing.md,index.md}
 
-  install -Dm644 COPYING README.md CHANGELOG.md -t "$pkgdir/usr/share/licenses/${_pkgname}"
+  install -Dm644 COPYING README.md CHANGELOG.md -t "$pkgdir/usr/share/licenses/${pkgname}"
   cp -a docs/docs/* "$pkgdir/usr/share/doc/${_pkgname}/"
 }
