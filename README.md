@@ -50,13 +50,3 @@ More a log of what I did to make the first packaging attempt work:
 
     To interact with the source tree/chroot, the path is e.g. `~/chroot/nilsnolde/build/valhalla-git/src/valhalla-git`. 
 4. Install the package with `sudo pacman -U <path_to.tar.zst>`
-
-## TODO
-
-  - [x] Create the AUR git repo remotely
-  - [ ] Publish initial package recipe (pending https://github.com/valhalla/valhalla/pull/5455) 
-  - [x] automation for publishing AUR package
-  - [x] don't forget to replace with `sed`: 
-    - `pkgver=printf "%s" "$(git describe --long --tags --abbrev=7 | sed 's/\([^-]*-\)g/r\1/;s/-/./g;s/v//g')"`
-    - `git_commit=git rev-parse --short HEAD`
-  - [x] run smth like `run-python_valhalla` in `check()`: needs appropriate `checkdepends` packages like spatialite-tools, unzip etc

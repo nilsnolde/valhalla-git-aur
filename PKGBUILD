@@ -15,9 +15,8 @@ url="https://github.com/valhalla/valhalla"
 license=('MIT')
 provides=("${_pkgname}=${pkgver}")
 conflicts=("${_pkgname}")
-# libmicrohttpd seems to be an unadvertised dependency of czmq-git
 depends=('prime_server' 'protobuf' 'python' 'libspatialite' 'luajit' 'chrono-date' 'gdal' 'python-lz4' 'python-shapely')
-makedepends=('cmake' 'git' 'vim' 'jq' 'boost' 'cxxopts' 'libosmium' 'unordered_dense' 'libmicrohttpd')
+makedepends=('cmake' 'git' 'vim' 'jq' 'boost' 'cxxopts' 'libosmium' 'unordered_dense')
 checkdepends=('spatialite-tools' 'unzip' 'curl' 'jq')
 source=("valhalla-git::git+${url}.git#commit=${_git_commit}")
 sha256sums=('SKIP')
