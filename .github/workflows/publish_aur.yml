@@ -39,7 +39,7 @@ jobs:
         
         if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
           # if we need an update we need to compute the latest version too
-          git clone --branch master --depth 1 https://github.com/valhalla/valhalla.git valhalla_upstream
+          git clone --branch master --depth 1 --tags https://github.com/valhalla/valhalla.git valhalla_upstream
           cd valhalla_upstream
           LATEST_VERSION=$(printf "%s" "$(git describe --long --tags --abbrev=7 | sed 's/\([^-]*-\)g/r\1/;s/-/./g;s/v//g')")
 
