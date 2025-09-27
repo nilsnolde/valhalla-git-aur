@@ -5,8 +5,8 @@
 pkgname=valhalla-git
 _pkgname=${pkgname%-git}
 ### will be updated by GHA/sed ###
-pkgver=3.5.1.r211.068a00c
-_git_commit=068a00c73c637ad9658cf91ff9008854166ebc29
+pkgver=3.5.1.r244.b74c857
+_git_commit=b74c857d0fc9b19bd32c5840e6b736dab17f50b0
 #########################
 pkgrel=1
 pkgdesc="Routing engine for OpenStreetMap."
