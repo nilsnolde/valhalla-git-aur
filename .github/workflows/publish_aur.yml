@@ -11,6 +11,9 @@ on:
         required: false
         default: true
 
+permissions:
+  contents: write
+
 jobs:
   update_version:
     runs-on: ubuntu-latest
@@ -63,6 +66,8 @@ jobs:
         # install arch's makepkg to output .SRCINFO
         sudo apt-get update && sudo apt-get install -y makepkg pacman-package-manager
         makepkg --printsrcinfo > .SRCINFO
+
+        cat .SRCINFO
         
         # Commit and push the changes
         git add PKGBUILD .SRCINFO
