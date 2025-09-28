@@ -9,7 +9,7 @@ pkgver=3.5.1.r244.b74c857
 _git_commit=b74c857d0fc9b19bd32c5840e6b736dab17f50b0
 #########################
 pkgrel=1
-pkgdesc="Routing engine for OpenStreetMap."
+pkgdesc="Routing engine for OpenStreetMap. AUR release repo is at https://github.com/nilsnolde/valhalla-git-aur."
 arch=('x86_64' 'aarch64')
 url="https://github.com/valhalla/valhalla"
 license=('MIT')
