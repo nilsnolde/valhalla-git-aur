@@ -1,8 +1,8 @@
 name: Publish on AUR
 
 on:
-  # schedule:
-  #   - cron: '0 0 * * *'  # Runs every day at midnight
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at midnight
   workflow_dispatch:
     inputs:
       publish_aur:
